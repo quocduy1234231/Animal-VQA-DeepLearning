@@ -1,87 +1,84 @@
-# Visual Question Answering (VQA) trên Tập dữ liệu Động vật
+# 🦊 Visual Question Answering (VQA) for Animal Images  
+Một dự án cá nhân xây dựng hệ thống **Visual Question Answering** có khả năng trả lời câu hỏi tiếng Anh dựa trên hình ảnh động vật.  
+Ví dụ:  
+- “What animal is this?”  
+- “How many animals are there?”  
+- “What color is the animal?”  
 
-Đồ án cuối kỳ môn **Học Sâu (Deep Learning)** – Trường Đại học Tôn Đức Thắng.
-
-Dự án xây dựng và so sánh các mô hình Visual Question Answering (VQA) để trả lời các câu hỏi tiếng Anh liên quan đến hình ảnh động vật (ví dụ: “What animal is this?”, “How many…”).  
-Dự án so sánh hiệu suất giữa mô hình tự xây dựng CNN (Train from Scratch) và mô hình Pre-trained ResNet-50, đồng thời đánh giá tác động của cơ chế Attention.
-
----
-
-## 👥 Thành viên thực hiện
-
-| STT | Họ và tên | MSSV |
-|:---:|:---|:---|
-| 1 | Nguyễn Quốc Duy | 52200196 |
-| 2 | Nguyễn Hoàng Ân | 52200183 |
-| 3 | Nguyễn Nhật Trường | 52200192 |
-
-**Giảng viên hướng dẫn:** PGS.TS. Lê Anh Cường
+Dự án tập trung thử nghiệm các mô hình **CNN**, **ResNet-50**, **LSTM**, và **Attention** để đánh giá khả năng hiểu hình ảnh + ngôn ngữ tự nhiên.
 
 ---
 
-## 📂 Cấu trúc Dự án
+## 🚀 Mục tiêu dự án
 
-- `dataset.ipynb`: Xử lý dữ liệu (tải ảnh COCO, lọc câu hỏi từ VQA, tiền xử lý văn bản).
-- `model_training.ipynb`: Huấn luyện mô hình **Train From Scratch** (Custom CNN).
-- `model_pre-trained.ipynb`: Huấn luyện mô hình **Pre-trained ResNet-50**.
-- `midterm_report.pdf`: Báo cáo chi tiết phương pháp và kết quả.
-
----
-
-## 📊 Dữ liệu (Dataset)
-
-Dự án sử dụng 2 bộ dữ liệu lớn, được lọc theo category **Animal**:
-
-1. **Hình ảnh:** COCO Train 2014 — chỉ giữ ảnh chứa động vật.  
-2. **Câu hỏi/Trả lời:** VQA v2.0 — lọc các câu hỏi "what animal..." và "how many...".
-
-### Quy trình xử lý:
-
-- **Ảnh:** Resize về `224x224`, chuyển Tensor, Normalize theo ImageNet.  
-- **Văn bản:** Tokenization, tạo vocab, chuyển chuỗi thành vector và padding.
+- Xây dựng pipeline đầy đủ cho VQA: xử lý dữ liệu → trích xuất đặc trưng → mô hình → đánh giá.  
+- So sánh hiệu suất giữa:
+  - **CNN tự xây dựng từ đầu (Train from Scratch)**  
+  - **ResNet-50 Pre-trained**  
+- Khám phá tác động của **Attention** trong việc kết hợp thông tin ảnh và câu hỏi.  
 
 ---
 
-## 🏗️ Kiến trúc Mô hình
+## 📊 Dataset
 
-Dự án thử nghiệm 4 cấu hình dựa trên kết hợp giữa:
+Dự án sử dụng 2 nguồn dữ liệu lớn:
 
-### 1️⃣ Trích xuất đặc trưng ảnh
-- **Custom CNN (Train from Scratch):** 3 lớp Conv2d + BatchNorm + MaxPool.  
-- **ResNet-50 (Pre-trained):** Lấy đặc trưng từ tầng FC trước khi phân loại (2048-d).
+### **1. COCO Train 2014**
+Dùng để lấy ảnh có chứa động vật.  
+Chỉ giữ lại những ảnh thuộc các category: dog, cat, bear, zebra, giraffe, sheep, cow, horse…
 
-### 2️⃣ Xử lý câu hỏi (Question Processing)
-- **LSTM** để xử lý chuỗi văn bản.  
-- **Word Embeddings (GloVe)** để biểu diễn từ.
+### **2. VQA v2.0 (2017)**
+Lọc các câu hỏi liên quan đến:
+- Nhận dạng (“what animal is…”)  
+- Đếm số lượng (“how many…”)  
+- Mô tả đặc điểm (“what color…”)  
 
-### 3️⃣ Cơ chế Attention
-- Trọng số hóa thông tin để mô hình tập trung vào vùng quan trọng của câu hỏi và hình ảnh.
+### **Tiền xử lý**
+- Ảnh: resize `224x224`, normalize, chuyển Tensor  
+- Văn bản: tokenize, tạo từ điển (vocab), padding  
 
 ---
 
-## 📈 Kết quả Thực nghiệm (50 epochs)
+## 🏗️ Kiến trúc mô hình
+
+Dự án thử nghiệm **4 cấu hình**:
+
+### 🔹 1. Image Feature Extraction
+- **Custom CNN:** 3 lớp Conv2D + BatchNorm + MaxPool  
+- **ResNet-50 Pretrained:** trích xuất feature 2048 chiều
+
+### 🔹 2. Question Encoder
+- **Word Embedding (GloVe)**  
+- **LSTM** để mã hóa câu hỏi
+
+### 🔹 3. Fusion
+- Có hoặc không sử dụng **Attention Mechanism**  
+- Kết hợp đặc trưng ảnh + đặc trưng câu hỏi
+
+### 🔹 4. Classifier
+- Multi-layer perceptron  
+- Dự đoán câu trả lời dạng phân loại (classification)
+
+---
+
+## 📈 Kết quả thực nghiệm
+
+Sau 50 epoch huấn luyện:
 
 | Mô hình | Attention | Train Acc | Val Acc | Nhận xét |
-|:---|:---:|:---:|:---:|:---|
-| Train from Scratch | ❌ | ~78% | ~33% | Overfitting nặng |
-| Train from Scratch | ✔️ | ~80% | ~32% | Attention giúp học nhanh nhưng không giảm overfitting |
-| Pre-trained ResNet | ❌ | ~64% | ~37% | Tổng quát hóa tốt hơn |
-| **Pre-trained ResNet** | **✔️** | **~73%** | **~41%** | **Kết quả tốt nhất** |
+|--------|:---------:|:---------:|:--------:|----------|
+| CNN (Scratch) | ❌ | ~78% | ~33% | Overfitting mạnh |
+| CNN (Scratch) | ✔️ | ~80% | ~32% | Attention không giúp tổng quát hóa |
+| ResNet-50 | ❌ | ~64% | ~37% | Tốt hơn mô hình scratch |
+| **ResNet-50** | **✔️** | **~73%** | **~41%** | **Hiệu suất tốt nhất** |
+
+👉 **Kết luận:**  
+ResNet-50 + Attention = mô hình mạnh nhất, cân bằng giữa học tốt và tổng quát hóa.
 
 ---
 
-## 🚀 Hướng dẫn Cài đặt & Chạy
+## 🛠️ Hướng dẫn chạy
 
-### Yêu cầu hệ thống
-- Python 3.10+
-- Các thư viện:  
-  `torch`, `torchvision`, `pandas`, `numpy`, `matplotlib`,  
-  `nltk`, `tqdm`, `Pillow`
-
----
-
-### Các bước chạy dự án
-
-#### 1️⃣ Clone repository
+### 1️⃣ Clone project
 ```bash
 git clone https://github.com/quocduy1234231/Animal-VQA-DeepLearning.git
