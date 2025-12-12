@@ -81,4 +81,4 @@ ResNet-50 + Attention = mô hình mạnh nhất, cân bằng giữa học tốt 
 
 ### 1️⃣ Clone project
 ```bash
-git clone https://github.com/quocduy1234231/Animal-VQA-DeepLearning.git
+git clone https://github.com/ngduy-dev/Animal-VQA-DeepLearning.git
